@@ -1,0 +1,6 @@
+#ifndef PHILOSOPHERS_H
+#define PHILOSOPHERS_H
+
+#define	HELLO 10
+
+#endif //PHILOSOPHERS_H
