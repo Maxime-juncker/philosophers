@@ -1,4 +1,4 @@
-NAME = philosophers
+NAME = philo
 
 # colors
 RED = 		\033[31m
@@ -15,6 +15,7 @@ LOG_D		= log/
 INCLUDES_D	= includes/
 
 SRCS = philosophers.c	\
+		debug.c			\
 
 OBJS = $(SRCS:.c=.o)
 HEADERS = includes/
@@ -39,7 +40,7 @@ $(BIN_D)$(NAME): $(OBJS) $(BIN_D)
 	$(CC) $(OBJS) $(CFLAGS) -o $(BIN_D)$(NAME)
 	echo "$(GREEN)[SUCCESS]$(RESET)"
 
-$(OBJS_D)%.o: $(SRCS_D)%.c includes/philosophers.h Makefile $(OBJS_D)
+$(OBJS_D)%.o: $(SRCS_D)%.c includes/philosophers.h Makefile | $(OBJS_D)
 	echo "$(BLUE)[COMPILING]: $@$(RESET)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -71,12 +72,15 @@ re:
 	$(MAKE) fclean
 	$(MAKE) all
 
-debug: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(BIN_D)a.out
-	echo "$(GREEN)[SUCCESS]$(RESET)"
+.PHONY: debug
+debug: all $(LOG_D)
+	./$(BIN_D)$(NAME) > $(LOG_D)$(shell date --iso=seconds).log
+	cat $(LOG_D)$(shell date --iso=seconds).log
+	echo "$(BLUE)[SAVED]: log/$(shell date --iso=seconds).log$(RESET)"
+
+.PHONY: clog
+clog:
+	$(RM) $(LOG_D)
 
 run: debug
 	$(BIN_D)a.out
-
-
-
