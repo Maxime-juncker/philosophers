@@ -1,12 +1,5 @@
 #include "philosophers.h"
 
-t_settings	create_settings(void);
-void		init(t_philosopher **philos, t_fork **forks, t_settings settings);
-void		*philosophing(void *philo_param);
-void		print_state(const t_philosopher *philo, const char * msg);
-t_fork		**get_forks(t_fork **set_forks);
-int			toggle_fork(t_philosopher *philo, int reset);
-
 int	main(int argc, char **argv)
 {
 	(void)argc;
@@ -16,10 +9,12 @@ int	main(int argc, char **argv)
 	t_fork			*forks;
 	t_settings		settings;
 	struct timeval	tv;
-
 	philos = NULL;
 	forks = NULL;
-	settings = create_settings();
+	argc--;
+	argv++;
+	settings = create_settings(argc, argv);
+	get_settings(&settings);
 	init(&philos, &forks, settings);
 	get_forks(&forks);
 	success("philosopher are created !!");
@@ -27,31 +22,65 @@ int	main(int argc, char **argv)
 	int	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		printf("id: %d\n", philos[i].id);
+		// printf("id: %d\n", philos[i].id);
 		gettimeofday(&tv, NULL);
 		philos[i].last_action = tv.tv_usec;
-		pthread_create(&philos[i].thread, NULL, philosophing, (void *)(&philos[i]));
+		if (pthread_create(&philos[i].thread, NULL, philosophing, (void *)(&philos[i])) != 0)
+		{
+			alert("thread creation failed");
+			exit(1);
+		}
+		usleep(settings.time_to_eat);
 		i++;
 	}
 
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		pthread_join(philos[i].thread, NULL);
+		if (pthread_join(philos[i].thread, NULL) == EDEADLK)
+		{
+			alert("A deadlock is detected !!");
+		}
 		i++;
 	}
 	success("thread are rejoined");
 
 }
 
-t_settings	create_settings(void)
+void		end(t_philosopher *set)
+{
+	static t_philosopher	*philos;
+	int						i;
+
+	if (set != NULL)
+	{
+		philos = set;
+		return ;
+	}
+	i = 0;
+	while (i < get_settings(NULL).number_of_philosophers)
+	{
+		if (pthread_join(philos[i].thread, NULL) == EDEADLK)
+		{
+			alert("A deadlock is detected !!");
+		}
+		i++;
+	}
+	exit(0);
+}
+
+t_settings	create_settings(const int count, char **values)
 {
 	t_settings	settings;
 
-	settings.number_of_philosophers = 3;
-	settings.time_to_die 			= 100;
-	settings.time_to_eat 			= 500;
-	settings.time_to_sleep			= 500;
+	settings.number_of_philosophers = ft_atoi(values[0]);
+	settings.time_to_die 			= ft_atoi(values[1]); // 4u
+	settings.time_to_eat 			= ft_atoi(values[2]); // 1u
+	settings.time_to_sleep			= ft_atoi(values[3]);
+	if (count == 5)
+		settings.number_of_time_each_philosopher_must_eat = ft_atoi(values[4]);
+	else
+		settings.number_of_time_each_philosopher_must_eat = -1;
 	return (settings);
 }
 
@@ -74,13 +103,21 @@ void	init(t_philosopher **philos, t_fork **forks, t_settings settings)
 	{
 		(*philos)[i].id = i;
 		(*philos)[i].is_ded = 0;
-		(*philos)[i].settings = settings;
 
 		(*forks)[i].id = i;
 		(*forks)[i].is_used = 0;
 		pthread_mutex_init(&(*forks)[i].mutex, NULL);
 		i++;
 	}
+}
+
+t_settings	get_settings(const t_settings *set_settings)
+{
+	static t_settings	settings;
+
+	if (set_settings != NULL)
+		settings = *set_settings;
+	return (settings);
 }
 
 void	print_state(const t_philosopher *philo, const char *msg)
@@ -108,7 +145,7 @@ int	toggle_fork(t_philosopher *philo, int reset)
 	t_fork	**forks;
 	int		next_id;
 
-	if (philo->id + 1 == philo->settings.number_of_philosophers)
+	if (philo->id + 1 == get_settings(NULL).number_of_philosophers)
 		next_id = 0;
 	else
 		next_id = philo->id + 1;
@@ -142,31 +179,39 @@ void	do_action(t_philosopher *philo, t_action action)
 {
 	struct timeval end_action;
 
+	gettimeofday(&end_action, NULL);
+	if (end_action.tv_usec - philo->last_action >= get_settings(NULL).time_to_die)
+	{
+		print_state(philo, "died");
+		alert("a philosopher starved.");
+		philo->is_ded = 1;
+		return ;
+	}
 	if (action == EATING)
 	{
 		while (toggle_fork(philo, 0) == 0)
-			usleep(10);
+			usleep(1);
 		print_state(philo, "is eating");
-		usleep(philo->settings.time_to_eat);
+		if (usleep(get_settings(NULL).time_to_eat) != 0)
+			alert("sleep failed");
 		toggle_fork(philo, 1);
 	}
 	else if (action == SLEEPING)
 	{
 		print_state(philo, "is sleeping");
-		usleep(philo->settings.time_to_sleep);
+		if (usleep(get_settings(NULL).time_to_sleep) != 0)
+			alert("sleep failed");
 	}
 	else if (action == THINKING)
 	{
 		print_state(philo, "is thinking");
-		usleep(philo->settings.time_to_sleep);
 	}
 	gettimeofday(&end_action, NULL);
-	if (end_action.tv_usec - philo->last_action >= philo->settings.time_to_die)
+	if (end_action.tv_usec - philo->last_action >= get_settings(NULL).time_to_die && action != EATING)
 	{
 		print_state(philo, "died");
 		alert("a philosopher starved.");
 		philo->is_ded = 1;
-		exit(0); // ! Not the best way to do this
 		return ;
 	}
 	philo->last_action = end_action.tv_usec;
@@ -177,20 +222,24 @@ void	*philosophing(void *param_philo)
 	t_philosopher	*philo;
 
 	philo = (t_philosopher *)param_philo;
-	success("philo is running");
-	while (i < 10 && philo->is_ded == 0)
+	// success("philo is running");
+	while ((get_settings(NULL).number_of_time_each_philosopher_must_eat == -1 || \
+		i < get_settings(NULL).number_of_time_each_philosopher_must_eat) \
+		&& philo->is_ded == 0)
 	{
 		do_action(philo, EATING);
 		if (philo->is_ded == 1)
-			break ;
+			end(NULL) ;
 		do_action(philo, SLEEPING);
 		if (philo->is_ded == 1)
-			break ;
+			end(NULL) ;
 		do_action(philo, THINKING);
 		if (philo->is_ded == 1)
-			break ;
+			end(NULL) ;
+		if (usleep(50) != 0)
+			alert("sleep failed");
 		i++;
 	}
-	pthread_detach(philo->thread);
+	// pthread_detach(philo->thread);
 	return (NULL);
 }

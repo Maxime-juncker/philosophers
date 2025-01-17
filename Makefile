@@ -1,11 +1,13 @@
 NAME = philo
 
 # colors
-RED = 		\033[31m
-GREEN = 	\033[32m
-YELLOW =	\033[33m
-RESET = 	\033[0m
-BLUE = 		\033[34m
+RED = 			\033[31m
+GREEN = 		\033[32m
+YELLOW = 		\033[33m
+RESET = 		\033[0m
+BLUE = 			\033[34m
+CURSOR_OFF =	\e[?25l
+CURSOR_ON = 	\e[?25h
 
 # paths
 OBJS_D		= obj/
@@ -16,6 +18,7 @@ INCLUDES_D	= includes/
 
 SRCS = philosophers.c	\
 		debug.c			\
+		ft_atoi.c		\
 
 OBJS = $(SRCS:.c=.o)
 HEADERS = includes/
@@ -33,39 +36,52 @@ MAKEFLAGS += -s
 RM = rm -fr
 
 .PHONY: all
-all : $(BIN_D)$(NAME)
+all : header $(BIN_D)$(NAME)
+
+.PHONY: header
+header:
+	printf "$(YELLOW)"
+	printf "\n\n========================="
+	printf "\n ___   _ _   _   _      _    __    _    ___   _ _   ___   ___ "
+	printf "\n| o \\ | U | | | | |    / \\  / _|  / \\  | o \\ | U | | __| | o \\"
+	printf "\n|  _/ |   | | | | |_  ( o ) \\_ \\ ( o ) |  _/ |   | | _|  |   /"
+	printf "\n|_|   |_n_| |_| |___|  \\_/  |__/  \\_/  |_|   |_n_| |___| |_|\\\\"
+	printf "\n\n=========================\n"
+	printf "[Author]: $(GREEN)Maxime Juncker"
+	printf "$(YELLOW)\t[github]: $(GREEN)https://github.com/Maxime-juncker\n\n"
 
 $(BIN_D)$(NAME): $(OBJS) $(BIN_D)
-	echo "$(GREEN)[CREATING EXE]: $(NAME)$(RESET)"
-	$(CC) $(OBJS) $(CFLAGS) -o $(BIN_D)$(NAME)
-	echo "$(GREEN)[SUCCESS]$(RESET)"
+	printf "$(BLUE)compiling: [$$(ls obj | wc -l)/$(shell ls src | wc -l)] [OK]\r\n"
+	$(CC) $(CFLAGS) $(OBJS) -o $(BIN_D)$(NAME)
+	printf "$(GREEN)$(NAME): success\n"
+	printf "\n---------------------$(CURSOR_ON)\n\n"
 
 $(OBJS_D)%.o: $(SRCS_D)%.c includes/philosophers.h Makefile | $(OBJS_D)
-	echo "$(BLUE)[COMPILING]: $@$(RESET)"
+	printf "$(CURSOR_OFF)$(BLUE)"
+	printf "compiling: [$$(ls obj | wc -l)/$(shell ls src | wc -l)]\r"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_D):
-	echo "$(YELLOW)[CREATING]: $(OBJ_D)$(RESET)"
 	mkdir -p $(OBJS_D)
 
 $(BIN_D):
-	echo "$(YELLOW)[CREATING]: $(BIN_D)$(RESET)"
 	mkdir -p $(BIN_D)
 
 $(LOG_D):
-	echo "$(YELLOW)[CREATING]: $(LOG_D)$(RESET)"
 	mkdir -p $(LOG_D)
 
 .PHONY: clean
 clean:
-	echo "$(RED)[CLEAN]: obj / log files$(RESET)"
 	$(RM) $(LOG_D)
 	$(RM) $(OBJS_D)
+	printf "\n$(RED)clean:\t$(NAME)\n\n$(RESET)"
+	printf "$(RED)---------------------\n\n$(RESET)"
 
 .PHONY: fclean
-fclean: clean
-	echo "$(RED)[CLEAN]: bin$(RESET)"
+fclean:
 	$(RM) $(BIN_D)
+	printf "\n$(RED)fclean:\t$(NAME)$(RESET)"
+	$(MAKE) clean
 
 .PHONY: re
 re:
