@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:32:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 15:38:48 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/20 16:14:09 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	create_philos_forks(t_philosopher **philos, t_fork **forks)
 
 	settings = get_settings(NULL);
 	*philos = malloc(sizeof(t_philosopher) * \
-	(settings->number_of_philosophers + 1));
+	(settings->number_of_philosophers));
 	if (*philos == NULL)
 		exit(1);
-	*forks = malloc(sizeof(t_fork) * (settings->number_of_philosophers + 1));
+	*forks = malloc(sizeof(t_fork) * (settings->number_of_philosophers));
 	if (*forks == NULL)
 	{
 		free(philos);

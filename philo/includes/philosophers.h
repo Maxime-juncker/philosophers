@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 15:33:44 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:58:35 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct s_fork
 
 // main.c
 int			main(int argc, char **argv);
-void		end(t_philosopher *set);
+void		end(t_philosopher *philos, t_fork *forks);
 
 // setup.c
 void		init(t_philosopher **philos, t_fork **forks);

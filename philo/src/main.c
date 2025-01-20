@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:13:39 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 15:32:39 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:57:54 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	run(t_philosopher *philos)
 	}
 }
 
-void	end(t_philosopher *philos)
+void	end(t_philosopher *philos, t_fork *forks)
 {
 	int	i;
 
@@ -47,6 +47,8 @@ void	end(t_philosopher *philos)
 		}
 		i++;
 	}
+	free(philos);
+	free(forks);
 }
 
 int	main(int argc, char **argv)
@@ -60,5 +62,5 @@ int	main(int argc, char **argv)
 	create_philos_forks(&philos, &forks);
 	init(&philos, &forks);
 	run(philos);
-	end(philos);
+	end(philos, forks);
 }
