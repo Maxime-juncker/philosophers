@@ -10,20 +10,21 @@ CURSOR_OFF =	\e[?25l
 CURSOR_ON = 	\e[?25h
 
 # paths
-OBJS_D		= obj/
-SRCS_D		= src/
+OBJS_D		= philo/obj/
+SRCS_D		= philo/src/
 BIN_D		= bin/
 LOG_D		= log/
-INCLUDES_D	= includes/
+INCLUDES_D	= philo/includes/
 
-SRCS =	philosophers.c	\
-		debug.c			\
+SRCS =	debug.c			\
+		forks.c			\
 		ft_atoi.c		\
 		main.c			\
+		philosophers.c	\
+		time.c			\
 		utils.c			\
 
 OBJS = $(SRCS:.c=.o)
-HEADERS = includes/
 
 # setting the path for src and obj files
 OBJS := $(addprefix $(OBJS_D), $(OBJS))
@@ -31,7 +32,7 @@ SRCS := $(addprefix $(SRCS_D), $(SRCS))
 
 # compiler settings
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -I$(HEADERS) -g3
+CFLAGS = -Wall -Werror -Wextra -I$(INCLUDES_D) -g3
 MAKEFLAGS += -s
 
 # commands
@@ -53,14 +54,14 @@ header:
 	printf "$(YELLOW)\t[github]: $(GREEN)https://github.com/Maxime-juncker\n\n"
 
 $(BIN_D)$(NAME): $(OBJS) $(BIN_D)
-	printf "$(BLUE)compiling: [$$(ls obj | wc -l)/$(shell ls src | wc -l)] [OK]\r\n"
+	printf "$(BLUE)compiling: [$$(ls $(OBJS_D) | wc -l)/$(shell ls $(SRCS_D) | wc -l)] [OK]\r\n"
 	$(CC) $(CFLAGS) $(OBJS) -o $(BIN_D)$(NAME)
 	printf "$(GREEN)$(NAME): success\n"
 	printf "\n---------------------$(CURSOR_ON)\n\n"
 
-$(OBJS_D)%.o: $(SRCS_D)%.c includes/philosophers.h Makefile | $(OBJS_D)
+$(OBJS_D)%.o: $(SRCS_D)%.c philo/includes/philosophers.h Makefile | $(OBJS_D)
 	printf "$(CURSOR_OFF)$(BLUE)"
-	printf "compiling: [$$(ls obj | wc -l)/$(shell ls src | wc -l)]\r"
+	printf "compiling: [$$(ls $(OBJS_D) | wc -l)/$(shell ls $(SRCS_D) | wc -l)]\r"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_D):

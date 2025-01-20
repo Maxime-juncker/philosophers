@@ -1,20 +1,13 @@
 #include <philosophers.h>
 
-long get_current_time_ms()
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
-}
-
 t_settings	create_settings(const int count, char **values)
 {
 	t_settings	settings;
 
 	settings.number_of_philosophers = ft_atoi(values[0]);
 	settings.time_to_die 			= ft_atoi(values[1]);
-	settings.time_to_eat 			= ft_atoi(values[2]) * 1000;
-	settings.time_to_sleep			= ft_atoi(values[3]) * 1000;
+	settings.time_to_eat 			= ft_atoi(values[2]);
+	settings.time_to_sleep			= ft_atoi(values[3]);
 	if (count == 5)
 		settings.number_of_time_each_philosopher_must_eat = ft_atoi(values[4]);
 	else
@@ -30,10 +23,6 @@ t_settings	*get_settings(const t_settings *set_settings)
 	if (set_settings != NULL)
 		settings = *set_settings;
 	return (&settings);
-}
-int	get_time_left(const t_philosopher *philo)
-{
-	return (get_settings(NULL)->time_to_die - (get_current_time_ms() - philo->last_meal));
 }
 
 void	print_state(const t_philosopher *philo, const char *msg)

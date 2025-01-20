@@ -9,6 +9,10 @@
 # include <errno.h>
 # include <limits.h>
 
+# ifndef DEBUG
+#  define DEBUG 1
+# endif
+
 // colors
 #define RESET	"\033[0m"
 #define BLACK	"\033[0;30m"
@@ -66,33 +70,35 @@ typedef struct s_fork
 }	t_fork;
 
 // main.c
-int	main(int argc, char **argv);
-
-
-// philosophers.c
+int			main(int argc, char **argv);
 void		init(t_philosopher **philos, t_fork **forks, t_settings settings);
 void		end(t_philosopher *set);
+
+// forks.c
 t_fork		**get_forks(t_fork **set_forks);
 int			toggle_fork(t_philosopher *philo, int reset);
+
+// atoi.c
+int			ft_atoi(const char *nptr);
+int			overflow_check(const char *s, void (*f)(int, void *), void *param);
+
+// philosophers
 void		do_action(t_philosopher *philo, t_state action);
 void		*philosophing(void *param_philo);
 
-// atoi.c
-int			overflow_check(const char *s, void (*f)(int, void *), void *param);
-int			ft_atoi(const char *nptr);
+// time.c
+int			get_time_left(const t_philosopher *philo);
+long		get_current_time_ms(void);
+int			sleep_ms(int ms);
 
 // utils.c
-long 		get_current_time_ms();
 t_settings	create_settings(const int count, char **values);
 t_settings	*get_settings(const t_settings *set_settings);
-int			get_time_left(const t_philosopher *philo);
 void		print_state(const t_philosopher *philo, const char *msg);
-
 
 // debug.c
 void		debug_color(const char *msg, const char *color);
 void		success(const char *msg);
-void		warning(const char *msg);
 void		error(const char *msg);
 void		alert(const char *msg);
 

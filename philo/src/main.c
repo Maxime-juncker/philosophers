@@ -1,5 +1,38 @@
 #include <philosophers.h>
 
+void	init(t_philosopher **philos, t_fork **forks, t_settings settings)
+{
+	int	i;
+
+	*philos = malloc(sizeof(t_philosopher) * (settings.number_of_philosophers + 1));
+	if (*philos == NULL)
+		exit(1);
+
+	*forks = malloc(sizeof(t_fork) * (settings.number_of_philosophers + 1));
+	if (*forks == NULL)
+	{
+		free(philos);
+		exit(1);
+	}
+	i = 0;
+	while (i < settings.number_of_philosophers)
+	{
+		(*philos)[i].id = i;
+		(*philos)[i].is_ded = 0;
+		(*philos)[i].state = i % 2 == 0 ? EATING : SLEEPING;
+
+		(*forks)[i].id = i;
+		(*forks)[i].is_used = 0;
+		pthread_mutex_init(&(*forks)[i].mutex, NULL);
+		i++;
+	}
+}
+
+void		end(t_philosopher *philos)
+{
+	(void)philos;
+}
+
 int	main(int argc, char **argv)
 {
 	t_philosopher	*philos;
