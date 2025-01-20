@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
+/*   Updated: 2025/01/20 15:33:44 by mjuncker         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
@@ -14,26 +26,26 @@
 # endif
 
 // colors
-#define RESET	"\033[0m"
-#define BLACK	"\033[0;30m"
-#define RED		"\033[0;31m"
-#define GREEN	"\033[0;32m"
-#define YELLOW	"\033[0;33m"
-#define BLUE	"\033[0;34m"
-#define PURPLE	"\033[0;35m"
-#define CYAN	"\033[0;36m"
-#define WHITE	"\033[0;37m"
-#define GRAY	"\033[0;30m"
+# define RESET	"\033[0m"
+# define BLACK	"\033[0;30m"
+# define RED	"\033[0;31m"
+# define GREEN	"\033[0;32m"
+# define YELLOW	"\033[0;33m"
+# define BLUE	"\033[0;34m"
+# define PURPLE	"\033[0;35m"
+# define CYAN	"\033[0;36m"
+# define WHITE	"\033[0;37m"
+# define GRAY	"\033[0;30m"
 
 // Background
-#define B_BLACK		"\033[40m"
-#define B_RED		"\033[41m"
-#define B_GREEN		"\033[42m"
-#define B_YELLOW	"\033[43m"
-#define B_BLUE		"\033[44m"
-#define B_PURPLE	"\033[45m"
-#define B_CYAN		"\033[46m"
-#define B_WHITE		"\033[47m"
+# define B_BLACK	"\033[40m"
+# define B_RED		"\033[41m"
+# define B_GREEN	"\033[42m"
+# define B_YELLOW	"\033[43m"
+# define B_BLUE		"\033[44m"
+# define B_PURPLE	"\033[45m"
+# define B_CYAN		"\033[46m"
+# define B_WHITE	"\033[47m"
 
 typedef struct s_settings
 {
@@ -54,12 +66,10 @@ typedef enum e_state
 
 typedef struct s_philosopher
 {
-	int					id;
-	short int			is_ded;
-	long int			last_meal;
-	pthread_t			thread;
-	t_state				state;
-	struct s_philosopher	*other_philos;
+	int			id;
+	long int	last_meal;
+	pthread_t	thread;
+	t_state		state;
 }	t_philosopher;
 
 typedef struct s_fork
@@ -71,8 +81,11 @@ typedef struct s_fork
 
 // main.c
 int			main(int argc, char **argv);
-void		init(t_philosopher **philos, t_fork **forks, t_settings settings);
 void		end(t_philosopher *set);
+
+// setup.c
+void		init(t_philosopher **philos, t_fork **forks);
+void		create_philos_forks(t_philosopher **philos, t_fork **forks);
 
 // forks.c
 t_fork		**get_forks(t_fork **set_forks);

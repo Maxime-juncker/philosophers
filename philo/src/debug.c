@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:51:52 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 09:45:29 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:38:20 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	debug_color(const char *msg, const char *color)
 	printf("%s%s\033[0m\n", color, msg);
 }
 #else
+
 void	debug_color(const char *msg, const char *color)
 {
 	(void)color;

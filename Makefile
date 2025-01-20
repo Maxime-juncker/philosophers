@@ -23,6 +23,7 @@ SRCS =	debug.c			\
 		philosophers.c	\
 		time.c			\
 		utils.c			\
+		setup.c			\
 
 OBJS = $(SRCS:.c=.o)
 
