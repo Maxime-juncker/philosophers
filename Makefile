@@ -16,9 +16,11 @@ BIN_D		= bin/
 LOG_D		= log/
 INCLUDES_D	= includes/
 
-SRCS = philosophers.c	\
+SRCS =	philosophers.c	\
 		debug.c			\
 		ft_atoi.c		\
+		main.c			\
+		utils.c			\
 
 OBJS = $(SRCS:.c=.o)
 HEADERS = includes/
@@ -41,7 +43,7 @@ all : header $(BIN_D)$(NAME)
 .PHONY: header
 header:
 	printf "$(YELLOW)"
-	printf "\n\n========================="
+	printf "\n========================="
 	printf "\n ___   _ _   _   _      _    __    _    ___   _ _   ___   ___ "
 	printf "\n| o \\ | U | | | | |    / \\  / _|  / \\  | o \\ | U | | __| | o \\"
 	printf "\n|  _/ |   | | | | |_  ( o ) \\_ \\ ( o ) |  _/ |   | | _|  |   /"
