@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 15:58:35 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 09:06:08 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,14 @@ long		get_current_time_ms(void);
 int			sleep_ms(int ms);
 
 // utils.c
+void		print_state(const t_philosopher *philo, const char *msg);
+
+// errors.c
+int			check_errors(int count, char **values);
+
+// settings.c
 t_settings	create_settings(const int count, char **values);
 t_settings	*get_settings(const t_settings *set_settings);
-void		print_state(const t_philosopher *philo, const char *msg);
 
 // debug.c
 void		debug_color(const char *msg, const char *color);

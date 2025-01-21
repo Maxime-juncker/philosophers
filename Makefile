@@ -24,6 +24,8 @@ SRCS =	debug.c			\
 		time.c			\
 		utils.c			\
 		setup.c			\
+		settings.c		\
+		errors.c		\
 
 OBJS = $(SRCS:.c=.o)
 
