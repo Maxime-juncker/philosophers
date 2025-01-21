@@ -62,7 +62,7 @@ $(BIN_D)$(NAME): $(OBJS) $(BIN_D)
 	printf "$(GREEN)$(NAME): success\n"
 	printf "\n---------------------$(CURSOR_ON)\n\n"
 
-$(OBJS_D)%.o: $(SRCS_D)%.c philo/includes/philosophers.h Makefile | $(OBJS_D)
+$(OBJS_D)%.o: $(SRCS_D)%.c philo/includes/philosophers.h | $(OBJS_D)
 	printf "$(CURSOR_OFF)$(BLUE)"
 	printf "compiling: [$$(ls $(OBJS_D) | wc -l)/$(shell ls $(SRCS_D) | wc -l)]\r"
 	$(CC) $(CFLAGS) -c $< -o $@
