@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 09:06:08 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:09:34 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ typedef enum e_state
 typedef struct s_philosopher
 {
 	int			id;
+	int			meal_eaten;
 	long int	last_meal;
 	pthread_t	thread;
 	t_state		state;
@@ -81,11 +82,11 @@ typedef struct s_fork
 
 // main.c
 int			main(int argc, char **argv);
-void		end(t_philosopher *philos, t_fork *forks);
+int			end(t_philosopher *philos, t_fork *forks);
 
 // setup.c
 void		init(t_philosopher **philos, t_fork **forks);
-void		create_philos_forks(t_philosopher **philos, t_fork **forks);
+int			create_philos_forks(t_philosopher **philos, t_fork **forks);
 
 // forks.c
 t_fork		**get_forks(t_fork **set_forks);

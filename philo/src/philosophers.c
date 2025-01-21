@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:10:35 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/20 15:47:52 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:05:37 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	do_action(t_philosopher *philo, t_state action)
 	if (action == EATING)
 	{
 		eat(philo);
+		philo->meal_eaten++;
 	}
 	else if (action == SLEEPING)
 	{
@@ -63,16 +64,14 @@ void	do_action(t_philosopher *philo, t_state action)
 
 void	*philosophing(void *param_philo)
 {
-	int				i;
 	t_philosopher	*philo;
 	t_settings		*settings;
 
-	i = 0;
 	philo = (t_philosopher *)param_philo;
 	settings = get_settings(NULL);
 	while ((settings->number_of_time_each_philosopher_must_eat == -1 || \
-		i < settings->number_of_time_each_philosopher_must_eat) || \
-		settings->should_stop == 1)
+		philo->meal_eaten < settings->number_of_time_each_philosopher_must_eat) \
+		|| settings->should_stop == 1)
 	{
 		do_action(philo, philo->state);
 		if (settings->should_stop == 1)
@@ -81,7 +80,6 @@ void	*philosophing(void *param_philo)
 			philo->state = EATING;
 		else
 			philo->state++;
-		i++;
 	}
 	return (NULL);
 }

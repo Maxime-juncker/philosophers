@@ -6,13 +6,13 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:32:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 09:37:32 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:10:53 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-void	create_philos_forks(t_philosopher **philos, t_fork **forks)
+int	create_philos_forks(t_philosopher **philos, t_fork **forks)
 {
 	t_settings	*settings;
 
@@ -22,15 +22,16 @@ void	create_philos_forks(t_philosopher **philos, t_fork **forks)
 	if (*philos == NULL)
 	{
 		error("failed malloc!");
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 	*forks = malloc(sizeof(t_fork) * (settings->number_of_philosophers));
 	if (*forks == NULL)
 	{
 		error("failed malloc!");
 		free(*philos);
-		exit(1);
+		return (EXIT_FAILURE);
 	}
+	return (0);
 }
 
 void	init(t_philosopher **philos, t_fork **forks)
@@ -41,6 +42,7 @@ void	init(t_philosopher **philos, t_fork **forks)
 	while (i < get_settings(NULL)->number_of_philosophers)
 	{
 		(*philos)[i].id = i;
+		(*philos)[i].meal_eaten = 0;
 		if (i % 2 == 0)
 			(*philos)[i].state = EATING;
 		else

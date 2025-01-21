@@ -35,7 +35,7 @@ SRCS := $(addprefix $(SRCS_D), $(SRCS))
 
 # compiler settings
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -I$(INCLUDES_D) -g3
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDES_D) -g3
 MAKEFLAGS += -s
 
 # commands

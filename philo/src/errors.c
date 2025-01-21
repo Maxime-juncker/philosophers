@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 08:56:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 09:26:15 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:07:37 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 
 void	overflow_feedback(int sign, void *param)
 {
-	(void)param;
-	(void)sign;
-	exit(EXIT_FAILURE);
+	*((int *)param) = sign;
 }
 
 int	is_only_digit(char *s)
@@ -33,15 +31,19 @@ int	is_only_digit(char *s)
 int	check_param_error(int count, char **values)
 {
 	int	i;
+	int	code;
 
 	i = 0;
+	code = 0;
 	while (i < count)
 	{
-		if (overflow_check(values[i], &overflow_feedback, NULL) < 0)
+		if (overflow_check(values[i], &overflow_feedback, &code) < 0)
 		{
 			error("negative values are forbidden!");
 			return (1);
 		}
+		if (code != 0)
+			return (1);
 		if (!is_only_digit(values[i]))
 		{
 			error("please only input numbers!");

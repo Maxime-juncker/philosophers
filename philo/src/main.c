@@ -6,13 +6,13 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:13:39 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 09:21:10 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:10:40 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-void	run(t_philosopher *philos)
+int	run(t_philosopher *philos)
 {
 	int				i;
 	struct timeval	tv;
@@ -28,13 +28,14 @@ void	run(t_philosopher *philos)
 			(void *)(&philos[i])) != 0)
 		{
 			alert("thread creation failed");
-			exit(1);
+			return (1);
 		}
 		i++;
 	}
+	return (0);
 }
 
-void	end(t_philosopher *philos, t_fork *forks)
+int	end(t_philosopher *philos, t_fork *forks)
 {
 	int	i;
 
@@ -44,11 +45,13 @@ void	end(t_philosopher *philos, t_fork *forks)
 		if (pthread_join(philos[i].thread, NULL) == EDEADLK)
 		{
 			alert("A deadlock is detected !!");
+			return (EXIT_FAILURE);
 		}
 		i++;
 	}
 	free(philos);
 	free(forks);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -56,13 +59,18 @@ int	main(int argc, char **argv)
 	t_philosopher	*philos;
 	t_fork			*forks;
 	t_settings		settings;
+	int				code;
 
 	if (check_errors(argc - 1, &argv[1]) == 1)
-		exit(EXIT_FAILURE);
+		return(EXIT_FAILURE);
 	settings = create_settings(argc - 1, &argv[1]);
 	get_settings(&settings);
-	create_philos_forks(&philos, &forks);
+	code = create_philos_forks(&philos, &forks);
+	if (code == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	init(&philos, &forks);
-	run(philos);
-	end(philos, forks);
+	code = run(philos);
+	if (code == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	return (end(philos, forks));
 }
