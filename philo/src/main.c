@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:13:39 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 13:10:40 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/01/25 09:15:56 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	main(int argc, char **argv)
 	int				code;
 
 	if (check_errors(argc - 1, &argv[1]) == 1)
-		return(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	settings = create_settings(argc - 1, &argv[1]);
 	get_settings(&settings);
 	code = create_philos_forks(&philos, &forks);
