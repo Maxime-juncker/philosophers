@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/11 15:27:30 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:46:56 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,8 @@ long long	get_current_time_ms(void);
 int			overflow_check(const char *s, void (*f)(int, void *), void *param);
 int			ft_atoi(const char *nptr);
 
+
+// philosophing.c
+void	*philosophing(void *philo_param);
 
 #endif //PHILOSOPHERS_H

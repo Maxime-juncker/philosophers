@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/11 15:29:29 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:51:32 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,19 @@ int	setup(t_philo **philos, t_settings *settings)
 		i++;
 	}
 	return (0);
+}
+
+void	start_philosophing(t_philo **philos, t_settings settings)
+{
+	int	i;
+
+	i = 0;
+	while (i < settings.number_of_philosophers)
+	{
+		philos[i]->right = philos[(i + 1) % settings.number_of_philosophers]->left;
+		
+		i++;
+	}
 }
 
 int	main(int argc, char **argv)
