@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:32:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 13:10:53 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:12:04 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	create_philos_forks(t_philosopher **philos, t_fork **forks)
 	return (0);
 }
 
-void	init(t_philosopher **philos, t_fork **forks)
+void	init(t_philosopher **philos, t_fork **forks, t_mutex_ref *refs)
 {
 	int			i;
 
@@ -47,8 +47,11 @@ void	init(t_philosopher **philos, t_fork **forks)
 			(*philos)[i].state = EATING;
 		else
 			(*philos)[i].state = SLEEPING;
+		(*philos)[i].mutex = *refs;
 		(*forks)[i].id = i;
 		(*forks)[i].is_used = 0;
+		(*philos)[i].left = &(*forks)[i];
+		(*philos)[i].right = &(*forks)[((*philos)[i].id + 1) % (get_settings(NULL)->number_of_philosophers)];
 		pthread_mutex_init(&(*forks)[i].mutex, NULL);
 		i++;
 	}

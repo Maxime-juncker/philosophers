@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 13:09:34 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:21:05 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 # include <errno.h>
 # include <limits.h>
 
-# ifndef DEBUG
-#  define DEBUG 1
+# ifndef SLEEP_MS
+#  define SLEEP_MS 10
 # endif
 
 // colors
@@ -55,23 +55,16 @@ typedef struct s_settings
 	int	time_to_sleep;
 	int	number_of_time_each_philosopher_must_eat;
 	int	should_stop;
+	
 }	t_settings;
 
 typedef enum e_state
 {
 	EATING = 0,
-	SLEEPING = 1,
-	THINKING = 2,
+	SLEEPING,
+	THINKING,
+	DEAD,
 }	t_state;
-
-typedef struct s_philosopher
-{
-	int			id;
-	int			meal_eaten;
-	long int	last_meal;
-	pthread_t	thread;
-	t_state		state;
-}	t_philosopher;
 
 typedef struct s_fork
 {
@@ -80,12 +73,37 @@ typedef struct s_fork
 	pthread_mutex_t	mutex;
 }	t_fork;
 
+typedef struct s_mutex_ref
+{
+	pthread_mutex_t	print_mutex;
+}	t_mutex_ref;
+
+typedef struct s_philosopher
+{
+	int			id;
+	int			meal_eaten;
+	long int	last_meal;
+	pthread_t	thread;
+	t_state		state;
+	t_fork		*left;
+	t_fork		*right;
+	t_mutex_ref	mutex;
+}	t_philosopher;
+
+typedef struct s_thread_package
+{
+	t_settings		*settings;
+	t_philosopher	*philo;
+}	t_thread_package;
+
+
+
 // main.c
 int			main(int argc, char **argv);
-int			end(t_philosopher *philos, t_fork *forks);
+int			shutdown(t_philosopher *philos, t_fork *forks);
 
 // setup.c
-void		init(t_philosopher **philos, t_fork **forks);
+void		init(t_philosopher **philos, t_fork **forks, t_mutex_ref *refs);
 int			create_philos_forks(t_philosopher **philos, t_fork **forks);
 
 // forks.c
@@ -97,16 +115,16 @@ int			ft_atoi(const char *nptr);
 int			overflow_check(const char *s, void (*f)(int, void *), void *param);
 
 // philosophers
-void		do_action(t_philosopher *philo, t_state action);
 void		*philosophing(void *param_philo);
+int			check_death(t_philosopher *philo, t_settings *settings);
 
 // time.c
 int			get_time_left(const t_philosopher *philo);
-long		get_current_time_ms(void);
-int			sleep_ms(int ms);
+long long		get_current_time_ms(void);
+int			sleep_ms(int ms, t_settings *settings);
 
 // utils.c
-void		print_state(const t_philosopher *philo, const char *msg);
+void		print_state(t_philosopher *philo, const char *msg);
 
 // errors.c
 int			check_errors(int count, char **values);
