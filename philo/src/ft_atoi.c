@@ -6,11 +6,12 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:28:20 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/01/21 09:21:32 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:28:00 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+#include <limits.h>
 
 static int	check_overflow(long n, int sign)
 {
@@ -62,10 +63,6 @@ int	ft_atoi(const char *nptr)
 
 static int	call_func(int n, void (*f)(int, void *), void *param)
 {
-	if (n < 0)
-		error("underflow detected");
-	else
-		error("overflow detected");
 	if (f == NULL)
 		return (n);
 	f(n, param);

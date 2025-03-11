@@ -17,13 +17,7 @@ INCLUDES_D = -Iincludes/
 # ---------------------------------------------------------------------------- #
 
 SRCS = 	main.c			\
-		debug.c			\
-		errors.c		\
-		forks.c			\
 		ft_atoi.c		\
-		philosophers.c	\
-		settings.c		\
-		setup.c			\
 		time.c			\
 		utils.c			\
 

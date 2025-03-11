@@ -6,17 +6,13 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:11:15 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/10 09:13:51 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:28:49 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
-
-int	get_time_left(const t_philosopher *philo)
-{
-	return (get_settings(NULL)->time_to_die - \
-	(get_current_time_ms() - philo->last_meal));
-}
+#include <sys/time.h>
+#include <unistd.h>
 
 long long	get_current_time_ms(void)
 {

@@ -5,95 +5,87 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/20 15:13:39 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/11 13:16:36 by mjuncker         ###   ########.fr       */
+/*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
+/*   Updated: 2025/03/11 15:29:29 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-int	should_stop(t_philosopher *philos, t_settings *settings)
+t_settings	create_settings(const int count, char **values)
 {
-	int	i;
+	t_settings	settings;
 	
-	i = 0;
-	while (i < settings->number_of_philosophers)
-	{
-		if (get_time_left(&philos[i]) <= 0)
-		{
-			return (1);
-		}
-		i++;
-	}
-	return (0);
+	settings.number_of_philosophers = ft_atoi(values[0]);
+	settings.time_to_die = ft_atoi(values[1]);
+	settings.time_to_eat = ft_atoi(values[2]);
+	settings.time_to_sleep = ft_atoi(values[3]);
+	if (count == 5)
+		settings.number_of_time_each_philosopher_must_eat = ft_atoi(values[4]);
+	else
+		settings.number_of_time_each_philosopher_must_eat = -1;
+	settings.should_stop = 0;
+	return (settings);
 }
 
-int	run(t_philosopher *philos)
-{
-	int				i;
-	struct timeval	tv;
-	t_settings		*settings;
-
-	settings = get_settings(NULL);
-	i = 0;
-	while (i < settings->number_of_philosophers)
-	{
-		gettimeofday(&tv, NULL);
-		philos[i].last_meal = get_current_time_ms();
-		if (pthread_create(&philos[i].thread, NULL, philosophing, \
-			(void *)(&philos[i])) != 0)
-		{
-			alert("thread creation failed");
-			return (1);
-		}
-		i++;
-	}
-	while (settings->should_stop == 0)
-	{
-		usleep(2 * 1000);
-		settings->should_stop = should_stop(philos, settings);
-	}
-	return (0);
-}
-
-int	shutdown(t_philosopher *philos, t_fork *forks)
+void	clear_philo(t_philo **philos)
 {
 	int	i;
 
 	i = 0;
-	while (i < get_settings(NULL)->number_of_philosophers)
+	while (philos[i])
 	{
-		if (pthread_join(philos[i].thread, NULL) == EDEADLK)
+		if (philos[i]->left)
 		{
-			alert("A deadlock is detected !!");
-			return (EXIT_FAILURE);
+			pthread_mutex_destroy(philos[i]->left);
+			free(philos[i]->left);
 		}
+		free(philos[i]);
 		i++;
 	}
 	free(philos);
-	free(forks);
+}
+
+int	setup(t_philo **philos, t_settings *settings)
+{
+	int	i;
+
+	i = 0;
+	while (i < settings->number_of_philosophers)
+	{
+		philos[i] = malloc(sizeof(t_philo));
+		if (!philos[i])
+			return (clear_philo(philos), -1);
+		philos[i]->id = i;
+		philos[i]->settings = settings;
+		if (i % 2 == 0)
+			philos[i]->state = EATING;
+		else
+			philos[i]->state = THINKING;
+		philos[i]->left = malloc(sizeof(pthread_mutex_t));
+		if (!philos[i]->left)
+			return (clear_philo(philos), -1);
+		if (pthread_mutex_init(philos[i]->left, NULL) != 0)
+		{
+			free(philos[i]->left);
+			philos[i]->left = NULL;
+			return (clear_philo(philos), -1);
+		}
+		i++;
+	}
 	return (0);
 }
 
 int	main(int argc, char **argv)
 {
-	t_philosopher	*philos;
-	t_fork			*forks;
-	t_settings		settings;
-	t_mutex_ref		ref;
-	int				code;
+	t_settings	settings;
+	t_philo		**philo;
 
-	if (check_errors(argc - 1, &argv[1]) == 1)
-		return (EXIT_FAILURE);
-	settings = create_settings(argc - 1, &argv[1]);
-	get_settings(&settings);
-	code = create_philos_forks(&philos, &forks);
-	if (code == EXIT_FAILURE)
-		return (EXIT_FAILURE);
-	pthread_mutex_init(&ref.print_mutex, NULL);
-	init(&philos, &forks, &ref);
-	code = run(philos);
-	if (code == EXIT_FAILURE)
-		return (EXIT_FAILURE);
-	return (shutdown(philos, forks));
+	settings = create_settings(argc + 1, &argv[1]);
+	philo = malloc(sizeof(t_philo *) * settings.number_of_philosophers);
+	if (!philo)
+		return (-1);
+	if (setup(philo, &settings) == -1)
+		return (-1);
+	printf("philo");
 }
