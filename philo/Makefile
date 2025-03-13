@@ -20,6 +20,7 @@ SRCS = 	main.c			\
 		ft_atoi.c		\
 		time.c			\
 		utils.c			\
+		philosophing.c	\
 
 # ---------------------------------------------------------------------------- #
 #                                 adding prefix                                #
@@ -82,6 +83,13 @@ re:
 	$(MAKE) fclean
 	$(MAKE) all
 
+.PHONY: run
+run: all
+	./$(NAME) 2 800 200 200
+
+.PHONY: hel
+hel: all
+	valgrind --tool=helgrind ./$(NAME) 2 800 200 200
 # ---------------------------------------------------------------------------- #
 #                              create directories                              #
 # ---------------------------------------------------------------------------- #

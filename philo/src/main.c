@@ -6,13 +6,13 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/11 15:51:32 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/13 18:15:29 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-t_settings	create_settings(const int count, char **values)
+t_settings	create_settings(const int count, char **values, int *stop_ref)
 {
 	t_settings	settings;
 	
@@ -24,7 +24,13 @@ t_settings	create_settings(const int count, char **values)
 		settings.number_of_time_each_philosopher_must_eat = ft_atoi(values[4]);
 	else
 		settings.number_of_time_each_philosopher_must_eat = -1;
-	settings.should_stop = 0;
+	settings.should_stop = stop_ref;
+	settings.locks = malloc(sizeof(t_locks));
+	// if (settings.locks == NULL)
+	// 	return ; //! error here
+	settings.starting_time = get_current_time_ms(0);
+	pthread_mutex_init(&settings.locks->lock_print, NULL);
+	pthread_mutex_init(&settings.locks->lock_time, NULL);
 	return (settings);
 }
 
@@ -46,12 +52,12 @@ void	clear_philo(t_philo **philos)
 	free(philos);
 }
 
-int	setup(t_philo **philos, t_settings *settings)
+int	setup(t_philo **philos, t_settings settings)
 {
 	int	i;
 
 	i = 0;
-	while (i < settings->number_of_philosophers)
+	while (i < settings.number_of_philosophers)
 	{
 		philos[i] = malloc(sizeof(t_philo));
 		if (!philos[i])
@@ -76,7 +82,7 @@ int	setup(t_philo **philos, t_settings *settings)
 	return (0);
 }
 
-void	start_philosophing(t_philo **philos, t_settings settings)
+void	run_philo(t_philo **philos, t_settings settings)
 {
 	int	i;
 
@@ -84,7 +90,19 @@ void	start_philosophing(t_philo **philos, t_settings settings)
 	while (i < settings.number_of_philosophers)
 	{
 		philos[i]->right = philos[(i + 1) % settings.number_of_philosophers]->left;
-		
+		pthread_create(&(philos[i]->thread), NULL, &philosophing, (void *)philos[i]);
+		i++;
+	}
+}
+
+void	shutdown(t_philo **philos, t_settings settings)
+{
+	int	i;
+
+	i = 0;
+	while (i < settings.number_of_philosophers)
+	{
+		pthread_join(philos[i]->thread, NULL);
 		i++;
 	}
 }
@@ -93,12 +111,16 @@ int	main(int argc, char **argv)
 {
 	t_settings	settings;
 	t_philo		**philo;
+	int			stop;
 
-	settings = create_settings(argc + 1, &argv[1]);
+	stop = 0;
+	settings = create_settings(argc + 1, &argv[1], &stop);
 	philo = malloc(sizeof(t_philo *) * settings.number_of_philosophers);
 	if (!philo)
 		return (-1);
-	if (setup(philo, &settings) == -1)
+	if (setup(philo, settings) == -1)
 		return (-1);
-	printf("philo");
+	run_philo(philo, settings);
+	shutdown(philo, settings);
+	
 }
