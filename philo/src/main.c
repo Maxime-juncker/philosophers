@@ -6,11 +6,12 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/13 18:15:29 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:11:49 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
+#include <unistd.h>
 
 t_settings	create_settings(const int count, char **values, int *stop_ref)
 {
@@ -21,9 +22,9 @@ t_settings	create_settings(const int count, char **values, int *stop_ref)
 	settings.time_to_eat = ft_atoi(values[2]);
 	settings.time_to_sleep = ft_atoi(values[3]);
 	if (count == 5)
-		settings.number_of_time_each_philosopher_must_eat = ft_atoi(values[4]);
+		settings.number_of_meal = ft_atoi(values[4]);
 	else
-		settings.number_of_time_each_philosopher_must_eat = -1;
+		settings.number_of_meal = -1;
 	settings.should_stop = stop_ref;
 	settings.locks = malloc(sizeof(t_locks));
 	// if (settings.locks == NULL)
@@ -31,6 +32,7 @@ t_settings	create_settings(const int count, char **values, int *stop_ref)
 	settings.starting_time = get_current_time_ms(0);
 	pthread_mutex_init(&settings.locks->lock_print, NULL);
 	pthread_mutex_init(&settings.locks->lock_time, NULL);
+	print_settings(settings);
 	return (settings);
 }
 
@@ -52,6 +54,19 @@ void	clear_philo(t_philo **philos)
 	free(philos);
 }
 
+int	access_shared_var(int *var, int value)
+{
+	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
+	int						res;
+
+	pthread_mutex_lock(&lock);
+	if (value != 0)
+		*var = value;
+	res = *var;
+	pthread_mutex_unlock(&lock);
+	return (res);
+}
+
 int	setup(t_philo **philos, t_settings settings)
 {
 	int	i;
@@ -59,10 +74,11 @@ int	setup(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		philos[i] = malloc(sizeof(t_philo));
+		philos[i] = calloc(1, sizeof(t_philo));
 		if (!philos[i])
 			return (clear_philo(philos), -1);
 		philos[i]->id = i;
+		philos[i]->meal_count = 0;
 		philos[i]->settings = settings;
 		if (i % 2 == 0)
 			philos[i]->state = EATING;
@@ -78,6 +94,33 @@ int	setup(t_philo **philos, t_settings settings)
 			return (clear_philo(philos), -1);
 		}
 		i++;
+	}
+	return (0);
+}
+
+int	stop_philo(t_philo **philos, t_settings settings)
+{
+	int	i;
+	int	nb_finished;
+
+	i = 0;
+	nb_finished = 0;
+	while (i < settings.number_of_philosophers)
+	{
+		if (is_dead(philos[i]))
+		{
+			access_shared_var(settings.should_stop, 1);
+			print_state(philos[i], "died");
+			return (1);
+		}
+		if (settings.number_of_meal != -1
+			&& access_shared_var(&(philos[i]->meal_count), 0) >= settings.number_of_meal)
+			nb_finished++;
+		i++;
+	}
+	if (nb_finished == settings.number_of_philosophers)
+	{
+		return (1);
 	}
 	return (0);
 }
@@ -106,7 +149,6 @@ void	shutdown(t_philo **philos, t_settings settings)
 		i++;
 	}
 }
-
 int	main(int argc, char **argv)
 {
 	t_settings	settings;
@@ -114,13 +156,19 @@ int	main(int argc, char **argv)
 	int			stop;
 
 	stop = 0;
-	settings = create_settings(argc + 1, &argv[1], &stop);
+	settings = create_settings(argc - 1, &argv[1], &stop);
 	philo = malloc(sizeof(t_philo *) * settings.number_of_philosophers);
 	if (!philo)
 		return (-1);
 	if (setup(philo, settings) == -1)
 		return (-1);
 	run_philo(philo, settings);
+	while (1)
+	{
+		if (stop_philo(philo, settings) == 1)
+			break;
+		usleep(2 * 1000);
+	}
 	shutdown(philo, settings);
 	
 }
