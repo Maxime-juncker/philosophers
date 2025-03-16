@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/15 14:11:49 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 09:09:53 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	setup(t_philo **philos, t_settings settings)
 		philos[i]->id = i;
 		philos[i]->meal_count = 0;
 		philos[i]->settings = settings;
-		if (i % 2 == 0)
+		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
 			philos[i]->state = EATING;
 		else
 			philos[i]->state = THINKING;
@@ -101,10 +101,10 @@ int	setup(t_philo **philos, t_settings settings)
 int	stop_philo(t_philo **philos, t_settings settings)
 {
 	int	i;
-	int	nb_finished;
+	// int	nb_finished;
 
 	i = 0;
-	nb_finished = 0;
+	// nb_finished = 0;
 	while (i < settings.number_of_philosophers)
 	{
 		if (is_dead(philos[i]))
@@ -115,13 +115,13 @@ int	stop_philo(t_philo **philos, t_settings settings)
 		}
 		if (settings.number_of_meal != -1
 			&& access_shared_var(&(philos[i]->meal_count), 0) >= settings.number_of_meal)
-			nb_finished++;
+			// nb_finished++;
 		i++;
 	}
-	if (nb_finished == settings.number_of_philosophers)
-	{
-		return (1);
-	}
+	// if (nb_finished == settings.number_of_philosophers)
+	// {
+	// 	return (1);
+	// }
 	return (0);
 }
 
@@ -134,6 +134,7 @@ void	run_philo(t_philo **philos, t_settings settings)
 	{
 		philos[i]->right = philos[(i + 1) % settings.number_of_philosophers]->left;
 		pthread_create(&(philos[i]->thread), NULL, &philosophing, (void *)philos[i]);
+		usleep(1000);
 		i++;
 	}
 }
@@ -167,7 +168,7 @@ int	main(int argc, char **argv)
 	{
 		if (stop_philo(philo, settings) == 1)
 			break;
-		usleep(2 * 1000);
+		usleep(10000);
 	}
 	shutdown(philo, settings);
 	

@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/15 14:05:27 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:49:16 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,11 @@ void	lock_forks(t_philo *philo)
 	}
 	else
 	{
+		pthread_mutex_lock(philo->left);
+		print_state(philo, "has taken a fork");
 		while (access_shared_var(philo->settings.should_stop, 0) == 0)
 			sleep_ms(2, philo);
+		pthread_mutex_unlock(philo->left);
 	}
 }
 
@@ -98,13 +101,17 @@ void	*philosophing(void *philo_param)
 
 	nb_meal = 0;
 	philo = (t_philo*)philo_param;
+	
 	while (!should_stop(philo))
 	{
 		do_action(philo);
+		if (philo->state == EATING)
+		{
+			nb_meal++;
+			access_shared_var(&philo->meal_count, nb_meal);
+		}
 		philo->state++;
 		philo->state %= 3;
-		nb_meal++;
-		access_shared_var(&philo->meal_count, nb_meal);
 	}
 	return (NULL);
 }
