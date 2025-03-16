@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 09:27:26 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 11:08:41 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,16 @@
 # include <stdlib.h>
 
 # define RESET	"\033[0m"
-# define GRAY	"\033[90m"
-# define BLUE	"\033[0;34m"
-# define GET_VARIABLE_NAME(Variable) (#Variable)
+# define RED	"\033[0;31m"
 
 typedef struct s_settings
 {
-	int	number_of_philosophers;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	number_of_meal;
-	int	*should_stop;
+	int			number_of_philosophers;
+	int			time_to_die;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			number_of_meal;
+	int			*should_stop;
 	long long	starting_time;
 }	t_settings;
 
@@ -46,7 +44,7 @@ typedef struct s_philo
 	int				id;
 	unsigned int	last_meal;
 	int				meal_count;
-	
+
 	t_state			state;
 
 	t_settings		settings;
@@ -58,18 +56,16 @@ typedef struct s_philo
 int				sleep_ms(int ms, t_philo *philo);
 int				is_dead(t_philo *philo);
 unsigned int	get_current_time_ms(long long starting_time);
+int				setup(t_philo **philos, t_settings settings);
 
 // atoi.c
-int				overflow_check(const char *s, void (*f)(int, void *), void *param);
-int				ft_atoi(const char *nptr);
+int				get_settings_val(const char *s);
 
 // philosophing.c
 void			*philosophing(void *philo_param);
 
 // utils.c
 void			print_state(t_philo *philo, const char *msg);
-void			print_settings(t_settings settings);
-
-int	access_shared_var(int *var, int value);
+int				access_shared_var(int *var, int value);
 
 #endif //PHILOSOPHERS_H

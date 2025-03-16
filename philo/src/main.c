@@ -6,93 +6,35 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 10:27:53 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 11:10:01 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 #include <unistd.h>
 
-t_settings	create_settings(const int count, char **values, int *stop_ref)
+int	create_settings(const int count, char **values,
+	int *stop_ref, t_settings *settings)
 {
-	t_settings	settings;
-	
-	settings.number_of_philosophers = ft_atoi(values[0]);
-	settings.time_to_die = ft_atoi(values[1]);
-	settings.time_to_eat = ft_atoi(values[2]);
-	settings.time_to_sleep = ft_atoi(values[3]);
+	if (count < 4 || count > 5)
+	{
+		printf("%sinvalid arguments%s\n", RED, RESET);
+		return (-1);
+	}
+	settings->number_of_philosophers = get_settings_val(values[0]);
+	settings->time_to_die = get_settings_val(values[1]);
+	settings->time_to_eat = get_settings_val(values[2]);
+	settings->time_to_sleep = get_settings_val(values[3]);
 	if (count == 5)
-		settings.number_of_meal = ft_atoi(values[4]);
+		settings->number_of_meal = get_settings_val(values[4]);
 	else
-		settings.number_of_meal = -1;
-	settings.should_stop = stop_ref;
-	settings.starting_time = get_current_time_ms(0);
-	return (settings);
-}
-
-void	clear_philo(t_philo **philos)
-{
-	int	i;
-
-	i = 0;
-	while (philos[i])
-	{
-		if (philos[i]->left)
-		{
-			pthread_mutex_destroy(philos[i]->left);
-			free(philos[i]->left);
-		}
-		free(philos[i]);
-		i++;
-	}
-	free(philos);
-}
-
-int	access_shared_var(int *var, int value)
-{
-	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
-	int						res;
-
-	pthread_mutex_lock(&lock);
-	if (value != 0)
-		*var = value;
-	res = *var;
-	pthread_mutex_unlock(&lock);
-	return (res);
-}
-
-int	setup(t_philo **philos, t_settings settings)
-{
-	int	i;
-
-	i = 0;
-	while (i < settings.number_of_philosophers)
-	{
-		philos[i] = calloc(1, sizeof(t_philo));
-		if (!philos[i])
-			return (clear_philo(philos), -1);
-		philos[i]->id = i;
-		philos[i]->meal_count = 0;
-		philos[i]->settings = settings;
-		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
-			philos[i]->state = EATING;
-		else
-			philos[i]->state = THINKING;
-		philos[i]->left = malloc(sizeof(pthread_mutex_t));
-		if (!philos[i]->left)
-		{
-			free(philos[i]);
-			philos[i] = NULL;
-			return (clear_philo(philos), -1);
-		}
-		if (pthread_mutex_init(philos[i]->left, NULL) != 0)
-		{
-			free(philos[i]->left);
-			philos[i]->left = NULL;
-			return (clear_philo(philos), -1);
-		}
-		i++;
-	}
+		settings->number_of_meal = -1;
+	if (settings->number_of_philosophers == -1
+		|| settings->time_to_die == -1 || settings->time_to_die == -1
+		|| settings->time_to_sleep == -1)
+		return (-1);
+	settings->should_stop = stop_ref;
+	settings->starting_time = get_current_time_ms(0);
 	return (0);
 }
 
@@ -112,7 +54,8 @@ int	stop_philo(t_philo **philos, t_settings settings)
 			return (1);
 		}
 		if (settings.number_of_meal != -1
-			&& access_shared_var(&(philos[i]->meal_count), 0) >= settings.number_of_meal)
+			&& access_shared_var(&(philos[i]->meal_count), 0)
+			>= settings.number_of_meal)
 			nb_finished++;
 		i++;
 	}
@@ -130,8 +73,10 @@ void	run_philo(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		philos[i]->right = philos[(i + 1) % settings.number_of_philosophers]->left;
-		pthread_create(&(philos[i]->thread), NULL, &philosophing, (void *)philos[i]);
+		philos[i]->right = philos[(i + 1)
+			% settings.number_of_philosophers]->left;
+		pthread_create(&(philos[i]->thread), NULL,
+			&philosophing, (void *)philos[i]);
 		usleep(100);
 		i++;
 	}
@@ -154,6 +99,7 @@ void	shutdown(t_philo **philos, t_settings settings)
 	}
 	free(philos);
 }
+
 int	main(int argc, char **argv)
 {
 	t_settings	settings;
@@ -161,7 +107,8 @@ int	main(int argc, char **argv)
 	int			stop;
 
 	stop = 0;
-	settings = create_settings(argc - 1, &argv[1], &stop);
+	if (create_settings(argc - 1, &argv[1], &stop, &settings) == -1)
+		return (-1);
 	philo = calloc(settings.number_of_philosophers, sizeof(t_philo *));
 	if (!philo)
 		return (-1);
@@ -171,8 +118,8 @@ int	main(int argc, char **argv)
 	while (1)
 	{
 		if (stop_philo(philo, settings) == 1)
-			break;
+			break ;
 		usleep(100);
 	}
-	shutdown(philo, settings);	
+	shutdown(philo, settings);
 }

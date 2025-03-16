@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 10:26:33 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 10:43:45 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ void	do_action(t_philo *philo)
 	{
 		if (get_forks(philo) == 1)
 			return ;
-		access_shared_var((int*)&philo->last_meal, get_current_time_ms(philo->settings.starting_time));
+		access_shared_var((int *)&philo->last_meal,
+			get_current_time_ms(philo->settings.starting_time));
 		print_state(philo, "is eating");
 		sleep_ms(philo->settings.time_to_eat, philo);
 		pthread_mutex_unlock(philo->left);
@@ -79,7 +80,6 @@ void	do_action(t_philo *philo)
 		print_state(philo, "is sleeping");
 		sleep_ms(philo->settings.time_to_sleep, philo);
 	}
-
 }
 
 int	should_stop(t_philo *philo)
@@ -87,7 +87,8 @@ int	should_stop(t_philo *philo)
 	if (access_shared_var(philo->settings.should_stop, 0))
 		return (1);
 	if (philo->settings.number_of_meal != -1
-		&& access_shared_var(&philo->meal_count, 0) >= philo->settings.number_of_meal)
+		&& access_shared_var(&philo->meal_count, 0)
+		>= philo->settings.number_of_meal)
 		return (1);
 	return (0);
 }
@@ -98,16 +99,15 @@ void	*philosophing(void *philo_param)
 	int		nb_meal;
 
 	nb_meal = 0;
-	philo = (t_philo*)philo_param;
-
-	
+	philo = (t_philo *)philo_param;
 	while (!should_stop(philo))
 	{
 		do_action(philo);
 		if (philo->state == EATING)
 		{
 			nb_meal++;
-			if (philo->settings.number_of_meal != -1 && nb_meal >= philo->settings.number_of_meal)
+			if (philo->settings.number_of_meal != -1
+				&& nb_meal >= philo->settings.number_of_meal)
 			{
 				access_shared_var(&philo->meal_count, nb_meal);
 			}

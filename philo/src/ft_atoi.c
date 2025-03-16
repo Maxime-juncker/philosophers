@@ -6,23 +6,12 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:28:20 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/11 15:28:00 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 11:08:35 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 #include <limits.h>
-
-static int	check_overflow(long n, int sign)
-{
-	if (n * 10 / 10 != n)
-	{
-		if (sign < 0)
-			return (0);
-		return (-1);
-	}
-	return (2);
-}
 
 static int	get_sign(const char *s, int *i)
 {
@@ -40,45 +29,23 @@ static int	get_sign(const char *s, int *i)
 	return (sign);
 }
 
-int	ft_atoi(const char *nptr)
+static int	overflow( void )
 {
-	int		i;
-	int		sign;
-	long	n;
-
-	i = 0;
-	n = 0;
-	sign = get_sign(nptr, &i);
-	while (nptr[i] >= '0' && nptr[i] <= '9')
-	{
-		if (check_overflow(n, sign) != 2)
-			return (check_overflow(n, sign));
-		n *= 10;
-		n += nptr[i] - '0';
-		i++;
-	}
-	n *= sign;
-	return ((int)n);
+	printf("%snumerical value require%s\n", RED, RESET);
+	return (-1);
 }
 
-static int	call_func(int n, void (*f)(int, void *), void *param)
+static int	check_error(int n)
 {
-	if (f == NULL)
-		return (n);
-	f(n, param);
+	if (n < 0)
+	{
+		printf("%snegative values are forbidden%s\n", RED, RESET);
+		return (-1);
+	}
 	return (n);
 }
 
-/*
- * @brief overflow_check will run like ft_atoi, however in case of an
- * @brief overflow, a f will be call with the MAX_INT (overflow) or
- * @brief MIN_INT (underflow) along with a void* param
- * @param s the string to convert
- * @param f the function to call in case an overflow or underflow happen
- * @param param the param to pass to f
- * @return the converted int, or MAX_INT / MIN_INT (overflow / underflow)
-*/
-int	overflow_check(const char *s, void (*f)(int, void *), void *param)
+int	get_settings_val(const char *s)
 {
 	int	result;
 	int	sign;
@@ -90,19 +57,19 @@ int	overflow_check(const char *s, void (*f)(int, void *), void *param)
 	while (s[i] >= '0' && s[i] <= '9')
 	{
 		if (result > INT_MAX / 10)
-			return (call_func(INT_MAX, f, param));
+			return (overflow());
 		if (result < INT_MIN / 10)
-			return (call_func(INT_MIN, f, param));
+			return (overflow());
 		result *= 10;
 		if (result > INT_MAX - (s[i] - '0'))
-			return (call_func(INT_MAX, f, param));
+			return (overflow());
 		if (result < INT_MIN + (s[i] - '0'))
-			return (call_func(INT_MIN, f, param));
+			return (overflow());
 		if (sign < 0)
 			result -= s[i] - '0';
 		else
 			result += s[i] - '0';
 		i++;
 	}
-	return (result);
+	return (check_error(result));
 }
