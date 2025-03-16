@@ -3,7 +3,7 @@ NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror $(INCLUDES_D) -g3
 MAKEFLAGS += --no-print-directory
-ARGS = 2 1000 200 200 5
+ARGS =  2 1000 200 200 3
 
 # ---------------------------------------------------------------------------- #
 #                                  directories                                 #
@@ -92,9 +92,9 @@ run: all
 hel: all
 	valgrind --tool=helgrind ./$(NAME) $(ARGS)
 
-.PHONY: val
-val: all
-	valgrind --track-origins=yes ./$(NAME) $(ARGS)
+.PHONY: leaks
+leaks: all
+	valgrind --track-origins=yes --leak-check=full ./$(NAME) $(ARGS)
 # ---------------------------------------------------------------------------- #
 #                              create directories                              #
 # ---------------------------------------------------------------------------- #

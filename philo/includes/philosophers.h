@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/15 13:22:11 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 09:27:26 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@
 # define BLUE	"\033[0;34m"
 # define GET_VARIABLE_NAME(Variable) (#Variable)
 
-typedef struct s_locks
-{
-	pthread_mutex_t	lock_time;
-	pthread_mutex_t	lock_print;
-}	t_locks;
-
 typedef struct s_settings
 {
 	int	number_of_philosophers;
@@ -35,7 +29,6 @@ typedef struct s_settings
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	number_of_meal;
-	t_locks	*locks;
 	int	*should_stop;
 	long long	starting_time;
 }	t_settings;

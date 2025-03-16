@@ -6,65 +6,63 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/15 14:49:16 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/16 10:26:33 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "philosophers.h"
 
-void	lock_forks(t_philo *philo)
+int	lock_forks(t_philo *philo, pthread_mutex_t *left, pthread_mutex_t *right)
 {
-	if (philo->left < philo->right)
+	if (right == NULL)
 	{
-		pthread_mutex_lock(philo->left);
-		if (access_shared_var(philo->settings.should_stop, 0))
-		{
-			pthread_mutex_unlock(philo->left);
-			return ;
-		}
-		print_state(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right);
-		if (access_shared_var(philo->settings.should_stop, 0))
-		{
-			pthread_mutex_unlock(philo->right);
-			return ;
-		}
-		print_state(philo, "has taken a fork");
-	}
-	else if (philo->left > philo->right)
-	{
-		pthread_mutex_lock(philo->right);
-		if (access_shared_var(philo->settings.should_stop, 0))
-		{
-			pthread_mutex_unlock(philo->right);
-			return ;
-		}
-		print_state(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left);
-		if (access_shared_var(philo->settings.should_stop, 0))
-		{
-			pthread_mutex_unlock(philo->left);
-			return ;
-		}
-		print_state(philo, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left);
+		pthread_mutex_lock(left);
 		print_state(philo, "has taken a fork");
 		while (access_shared_var(philo->settings.should_stop, 0) == 0)
 			sleep_ms(2, philo);
-		pthread_mutex_unlock(philo->left);
+		pthread_mutex_unlock(left);
+		return (1);
 	}
+	pthread_mutex_lock(left);
+	if (access_shared_var(philo->settings.should_stop, 0))
+	{
+		pthread_mutex_unlock(left);
+		return (1);
+	}
+	print_state(philo, "has taken a fork");
+	pthread_mutex_lock(right);
+	if (access_shared_var(philo->settings.should_stop, 0))
+	{
+		pthread_mutex_unlock(right);
+		return (1);
+	}
+	print_state(philo, "has taken a fork");
+	return (0);
+}
+
+int	get_forks(t_philo *philo)
+{
+	if (philo->left < philo->right)
+	{
+		return (lock_forks(philo, philo->left, philo->right));
+	}
+	else if (philo->left > philo->right)
+	{
+		return (lock_forks(philo, philo->right, philo->left));
+	}
+	else
+	{
+		return (lock_forks(philo, philo->left, NULL));
+	}
+	return (0);
 }
 
 void	do_action(t_philo *philo)
 {
 	if (philo->state == EATING)
 	{
-		lock_forks(philo);
-		if (access_shared_var(philo->settings.should_stop, 0))
+		if (get_forks(philo) == 1)
 			return ;
 		access_shared_var((int*)&philo->last_meal, get_current_time_ms(philo->settings.starting_time));
 		print_state(philo, "is eating");
@@ -101,6 +99,7 @@ void	*philosophing(void *philo_param)
 
 	nb_meal = 0;
 	philo = (t_philo*)philo_param;
+
 	
 	while (!should_stop(philo))
 	{
@@ -108,7 +107,10 @@ void	*philosophing(void *philo_param)
 		if (philo->state == EATING)
 		{
 			nb_meal++;
-			access_shared_var(&philo->meal_count, nb_meal);
+			if (philo->settings.number_of_meal != -1 && nb_meal >= philo->settings.number_of_meal)
+			{
+				access_shared_var(&philo->meal_count, nb_meal);
+			}
 		}
 		philo->state++;
 		philo->state %= 3;
