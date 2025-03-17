@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 10:43:45 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:54:09 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ int	lock_forks(t_philo *philo, pthread_mutex_t *left, pthread_mutex_t *right)
 		return (1);
 	}
 	pthread_mutex_lock(left);
+	philo->lock_left = left;
 	if (access_shared_var(philo->settings.should_stop, 0))
 	{
-		pthread_mutex_unlock(left);
 		return (1);
 	}
 	print_state(philo, "has taken a fork");
 	pthread_mutex_lock(right);
+	philo->lock_right = right;
 	if (access_shared_var(philo->settings.should_stop, 0))
 	{
-		pthread_mutex_unlock(right);
 		return (1);
 	}
 	print_state(philo, "has taken a fork");
@@ -70,6 +70,9 @@ void	do_action(t_philo *philo)
 		sleep_ms(philo->settings.time_to_eat, philo);
 		pthread_mutex_unlock(philo->left);
 		pthread_mutex_unlock(philo->right);
+		philo->lock_left = NULL;
+		philo->lock_right = NULL;
+		
 	}
 	else if (philo->state == THINKING)
 	{
@@ -115,5 +118,9 @@ void	*philosophing(void *philo_param)
 		philo->state++;
 		philo->state %= 3;
 	}
+	if (philo->lock_right)
+		pthread_mutex_unlock(philo->right);
+	if (philo->lock_left)
+		pthread_mutex_unlock(philo->left);
 	return (NULL);
 }

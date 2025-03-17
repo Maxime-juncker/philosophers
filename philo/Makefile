@@ -90,7 +90,7 @@ run: all
 
 .PHONY: hel
 hel: all
-	valgrind --tool=helgrind ./$(NAME) $(ARGS)
+	valgrind --tool=helgrind --tool=drd ./$(NAME) $(ARGS)
 
 .PHONY: leaks
 leaks: all

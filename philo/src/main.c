@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 11:10:01 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:56:20 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,11 +89,13 @@ void	shutdown(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		pthread_mutex_lock(philos[i]->left);
-		pthread_mutex_unlock(philos[i]->left);
-		pthread_mutex_destroy(philos[i]->left);
 		pthread_join(philos[i]->thread, NULL);
-		free(philos[i]->left);
+		i++;
+	}
+	i = 0;
+	while (i < settings.number_of_philosophers)
+	{
+		pthread_mutex_destroy(philos[i]->left);
 		free(philos[i]);
 		i++;
 	}
