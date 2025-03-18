@@ -6,21 +6,11 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:54:32 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:17:25 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
-
-void	print_state(t_philo *philo, const char *msg)
-{
-	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
-
-	pthread_mutex_lock(&lock);
-	printf("%u\t%d\t%s\n",
-		get_current_time_ms(philo->settings.starting_time), philo->id, msg);
-	pthread_mutex_unlock(&lock);
-}
 
 int	access_shared_var(int *var, int value)
 {
@@ -78,14 +68,14 @@ int	setup(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		philos[i] = calloc(1, sizeof(t_philo));
+		philos[i] = malloc(sizeof(t_philo));
 		if (!philos[i])
 			return (clear_philo(philos), -1);
+		memset(philos[i], 0, sizeof(t_philo));
 		philos[i]->id = i;
 		philos[i]->meal_count = 0;
+		philos[i]->last_meal = 0;
 		philos[i]->settings = settings;
-		philos[i]->lock_left = NULL;
-		philos[i]->lock_right = NULL;
 		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
 			philos[i]->state = EATING;
 		else

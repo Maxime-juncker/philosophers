@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:51:25 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:15:36 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,10 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+#include <string.h>
 
 # define RESET	"\033[0m"
 # define RED	"\033[0;31m"
-
-# define RIGHT 0b0001
-# define LEFT 0b0010
 
 typedef struct s_settings
 {
@@ -47,9 +45,7 @@ typedef struct s_philo
 	int				id;
 	unsigned int	last_meal;
 	int				meal_count;
-	pthread_mutex_t	*lock_left;
-	pthread_mutex_t	*lock_right;
-	
+
 	t_state			state;
 
 	t_settings		settings;
@@ -72,5 +68,6 @@ void			*philosophing(void *philo_param);
 // utils.c
 void			print_state(t_philo *philo, const char *msg);
 int				access_shared_var(int *var, int value);
+void			clear_philo(t_philo **philos);
 
-#endif //PHILOSOPHERS_H
+#endif //PHILOSOPHERS_H	

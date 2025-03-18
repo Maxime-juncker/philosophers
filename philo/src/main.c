@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:56:20 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:20:10 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,9 @@ int	stop_philo(t_philo **philos, t_settings settings)
 			nb_finished++;
 		i++;
 	}
-	if (nb_finished == settings.number_of_philosophers)
+	if (nb_finished >= settings.number_of_philosophers)
 	{
+		access_shared_var(settings.should_stop, 1);
 		return (1);
 	}
 	return (0);
@@ -75,8 +76,11 @@ void	run_philo(t_philo **philos, t_settings settings)
 	{
 		philos[i]->right = philos[(i + 1)
 			% settings.number_of_philosophers]->left;
-		pthread_create(&(philos[i]->thread), NULL,
-			&philosophing, (void *)philos[i]);
+		if (pthread_create(&(philos[i]->thread), NULL,
+			&philosophing, (void *)philos[i]) != 0)
+		{
+			return ;
+		}
 		usleep(100);
 		i++;
 	}
@@ -89,13 +93,16 @@ void	shutdown(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		pthread_join(philos[i]->thread, NULL);
+		if (pthread_join(philos[i]->thread, NULL) != 0)
+			printf("join failed\n");
 		i++;
 	}
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		pthread_mutex_destroy(philos[i]->left);
+		if (pthread_mutex_destroy(philos[i]->left) != 0)
+			printf("mutex can't be destroyed\n");
+		free(philos[i]->left);
 		free(philos[i]);
 		i++;
 	}
@@ -111,7 +118,8 @@ int	main(int argc, char **argv)
 	stop = 0;
 	if (create_settings(argc - 1, &argv[1], &stop, &settings) == -1)
 		return (-1);
-	philo = calloc(settings.number_of_philosophers, sizeof(t_philo *));
+	philo = malloc(settings.number_of_philosophers * sizeof(t_philo *));
+	memset(philo, 0, settings.number_of_philosophers * sizeof(t_philo *));
 	if (!philo)
 		return (-1);
 	if (setup(philo, settings) == -1)
