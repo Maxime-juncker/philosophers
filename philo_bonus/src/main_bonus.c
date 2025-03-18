@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 10:20:27 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:06:10 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philosophers.h>
+#include <philosophers_bonus.h>
 #include <unistd.h>
 
 int	create_settings(const int count, char **values,
@@ -59,6 +59,7 @@ int	stop_philo(t_philo **philos, t_settings settings)
 			nb_finished++;
 		i++;
 	}
+	// printf("[nb_finised]: %d\n", nb_finished);	
 	if (nb_finished >= settings.number_of_philosophers)
 	{
 		access_shared_var(settings.should_stop, 1);
@@ -97,7 +98,6 @@ void	shutdown(t_philo **philos, t_settings settings)
 	while (i < settings.number_of_philosophers)
 	{
 		pthread_mutex_destroy(philos[i]->left);
-		free(philos[i]->left);
 		free(philos[i]);
 		i++;
 	}
@@ -113,7 +113,7 @@ int	main(int argc, char **argv)
 	stop = 0;
 	if (create_settings(argc - 1, &argv[1], &stop, &settings) == -1)
 		return (-1);
-	philo = malloc(settings.number_of_philosophers * sizeof(t_philo *));
+	philo = calloc(settings.number_of_philosophers, sizeof(t_philo *));
 	if (!philo)
 		return (-1);
 	if (setup(philo, settings) == -1)

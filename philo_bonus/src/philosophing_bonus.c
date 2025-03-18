@@ -1,27 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophing.c                                     :+:      :+:    :+:   */
+/*   philosophing_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 10:18:34 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:06:10 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include "philosophers.h"
-
-void	print_state(t_philo *philo, const char *msg)
-{
-	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
-
-	pthread_mutex_lock(&lock);
-	printf("%u\t%d\t%s\n",
-		get_current_time_ms(philo->settings.starting_time), philo->id, msg);
-	pthread_mutex_unlock(&lock);
-}
+#include "philosophers_bonus.h"
 
 int	lock_forks(t_philo *philo, pthread_mutex_t *left, pthread_mutex_t *right)
 {

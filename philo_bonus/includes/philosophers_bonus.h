@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   philosophers_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 10:23:11 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:03:22 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
-# include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+#include <semaphore.h>
 
 # define RESET	"\033[0m"
 # define RED	"\033[0;31m"
@@ -44,13 +44,13 @@ typedef struct s_philo
 	int				id;
 	unsigned int	last_meal;
 	int				meal_count;
-
+	
 	t_state			state;
 
 	t_settings		settings;
 	pthread_t		thread;
-	pthread_mutex_t	*left;
-	pthread_mutex_t	*right;
+	sem_t			*left;
+	sem_t			*right;
 }	t_philo;
 
 int				sleep_ms(int ms, t_philo *philo);
