@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 13:20:10 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:25:13 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	run_philo(t_philo **philos, t_settings settings)
 		philos[i]->right = philos[(i + 1)
 			% settings.number_of_philosophers]->left;
 		if (pthread_create(&(philos[i]->thread), NULL,
-			&philosophing, (void *)philos[i]) != 0)
+				&philosophing, (void *)philos[i]) != 0)
 		{
 			return ;
 		}
