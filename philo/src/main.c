@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:56:20 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 09:58:29 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,10 @@ int	stop_philo(t_philo **philos, t_settings settings)
 			nb_finished++;
 		i++;
 	}
-	if (nb_finished == settings.number_of_philosophers)
+	// printf("[nb_finised]: %d\n", nb_finished);	
+	if (nb_finished >= settings.number_of_philosophers)
 	{
+		access_shared_var(settings.should_stop, 1);
 		return (1);
 	}
 	return (0);

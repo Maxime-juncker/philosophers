@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:51:25 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:03:22 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ typedef struct s_philo
 	int				id;
 	unsigned int	last_meal;
 	int				meal_count;
-	pthread_mutex_t	*lock_left;
-	pthread_mutex_t	*lock_right;
 	
 	t_state			state;
 

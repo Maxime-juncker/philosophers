@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/17 12:54:32 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:03:32 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,6 @@ int	setup(t_philo **philos, t_settings settings)
 		philos[i]->id = i;
 		philos[i]->meal_count = 0;
 		philos[i]->settings = settings;
-		philos[i]->lock_left = NULL;
-		philos[i]->lock_right = NULL;
 		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
 			philos[i]->state = EATING;
 		else
