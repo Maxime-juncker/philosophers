@@ -3,7 +3,7 @@ NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror $(INCLUDES_D) -g3
 MAKEFLAGS += --no-print-directory
-ARGS =  2 1000 200 200 3
+ARGS = 20 2000 200 200 0
 
 # ---------------------------------------------------------------------------- #
 #                                  directories                                 #

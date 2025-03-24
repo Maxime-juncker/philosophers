@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 11:07:27 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:15:57 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int	create_settings(const int count, char **values,
 		return (-1);
 	settings->should_stop = stop_ref;
 	settings->starting_time = get_current_time_ms(0);
+	if (settings->number_of_meal == 0)
+		return (-1);
 	return (0);
 }
 
@@ -116,7 +118,7 @@ int	main(int argc, char **argv)
 
 	stop = 0;
 	if (create_settings(argc - 1, &argv[1], &stop, &settings) == -1)
-		return (-1);
+		return (0);
 	philo = malloc(settings.number_of_philosophers * sizeof(t_philo *));
 	if (!philo)
 		return (-1);
