@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 13:25:20 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/19 08:43:41 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
 
 # define RESET	"\033[0m"
 # define RED	"\033[0;31m"
@@ -68,6 +67,5 @@ void			*philosophing(void *philo_param);
 // utils.c
 void			print_state(t_philo *philo, const char *msg);
 int				access_shared_var(int *var, int value);
-void			clear_philo(t_philo **philos);
 
-#endif //PHILOSOPHERS_H	
+#endif //PHILOSOPHERS_H

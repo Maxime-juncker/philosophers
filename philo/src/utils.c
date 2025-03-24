@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 13:17:25 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:58:50 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,17 @@ int	setup_fork(t_philo **philos, int i)
 	return (0);
 }
 
+void	cpy_settings(t_settings *s1, t_settings s2)
+{
+	s1->number_of_philosophers = s2.number_of_philosophers;
+	s1->time_to_die = s2.time_to_die;
+	s1->time_to_eat = s2.time_to_eat;
+	s1->time_to_sleep = s2.time_to_sleep;
+	s1->number_of_meal = s2.number_of_meal;
+	s1->should_stop = s2.should_stop;
+	s1->starting_time = s2.starting_time;
+}
+
 int	setup(t_philo **philos, t_settings settings)
 {
 	int	i;
@@ -71,11 +82,10 @@ int	setup(t_philo **philos, t_settings settings)
 		philos[i] = malloc(sizeof(t_philo));
 		if (!philos[i])
 			return (clear_philo(philos), -1);
-		memset(philos[i], 0, sizeof(t_philo));
 		philos[i]->id = i;
 		philos[i]->meal_count = 0;
 		philos[i]->last_meal = 0;
-		philos[i]->settings = settings;
+		cpy_settings(&philos[i]->settings, settings);
 		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
 			philos[i]->state = EATING;
 		else

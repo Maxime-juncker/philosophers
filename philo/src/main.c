@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 13:25:13 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:30:04 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int	create_settings(const int count, char **values,
 		return (-1);
 	settings->should_stop = stop_ref;
 	settings->starting_time = get_current_time_ms(0);
+	if (settings->number_of_meal == 0)
+		return (-1);
 	return (0);
 }
 
@@ -67,23 +69,25 @@ int	stop_philo(t_philo **philos, t_settings settings)
 	return (0);
 }
 
-void	run_philo(t_philo **philos, t_settings settings)
+int	run_philo(t_philo **philos, t_settings settings)
 {
-	int				i;
+	int	i;
 
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
 		philos[i]->right = philos[(i + 1)
 			% settings.number_of_philosophers]->left;
-		if (pthread_create(&(philos[i]->thread), NULL,
-				&philosophing, (void *)philos[i]) != 0)
+		if (pthread_create(&(philos[i]->thread), NULL, &philosophing,
+				(void *)philos[i]) != 0)
 		{
-			return ;
+			access_shared_var(settings.should_stop, 1);
+			return (1);
 		}
 		usleep(100);
 		i++;
 	}
+	return (0);
 }
 
 void	shutdown(t_philo **philos, t_settings settings)
@@ -93,15 +97,13 @@ void	shutdown(t_philo **philos, t_settings settings)
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		if (pthread_join(philos[i]->thread, NULL) != 0)
-			printf("join failed\n");
+		pthread_join(philos[i]->thread, NULL);
 		i++;
 	}
 	i = 0;
 	while (i < settings.number_of_philosophers)
 	{
-		if (pthread_mutex_destroy(philos[i]->left) != 0)
-			printf("mutex can't be destroyed\n");
+		pthread_mutex_destroy(philos[i]->left);
 		free(philos[i]->left);
 		free(philos[i]);
 		i++;
@@ -117,14 +119,17 @@ int	main(int argc, char **argv)
 
 	stop = 0;
 	if (create_settings(argc - 1, &argv[1], &stop, &settings) == -1)
-		return (-1);
+		return (0);
 	philo = malloc(settings.number_of_philosophers * sizeof(t_philo *));
-	memset(philo, 0, settings.number_of_philosophers * sizeof(t_philo *));
 	if (!philo)
 		return (-1);
 	if (setup(philo, settings) == -1)
 		return (-1);
-	run_philo(philo, settings);
+	if (run_philo(philo, settings) == 1)
+	{
+		shutdown(philo, settings);
+		return (1);
+	}
 	while (1)
 	{
 		if (stop_philo(philo, settings) == 1)
