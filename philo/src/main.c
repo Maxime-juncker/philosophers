@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 10:49:10 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:07:27 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ int	stop_philo(t_philo **philos, t_settings settings)
 	return (0);
 }
 
-void	run_philo(t_philo **philos, t_settings settings)
+int	run_philo(t_philo **philos, t_settings settings)
 {
-	int				i;
+	int	i;
 
 	i = 0;
 	while (i < settings.number_of_philosophers)
@@ -78,11 +78,13 @@ void	run_philo(t_philo **philos, t_settings settings)
 			% settings.number_of_philosophers]->left;
 		if (pthread_create(&(philos[i]->thread), NULL, &philosophing, (void *)philos[i]) != 0)
 		{
-			
+			access_shared_var(settings.should_stop, 1);
+			return (1);
 		}
 		usleep(100);
 		i++;
 	}
+	return (0);
 }
 
 void	shutdown(t_philo **philos, t_settings settings)
@@ -120,7 +122,11 @@ int	main(int argc, char **argv)
 		return (-1);
 	if (setup(philo, settings) == -1)
 		return (-1);
-	run_philo(philo, settings);
+	if (run_philo(philo, settings) == 1)
+	{
+		shutdown(philo, settings);
+		return (1);
+	}
 	while (1)
 	{
 		if (stop_philo(philo, settings) == 1)
