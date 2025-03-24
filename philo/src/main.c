@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 11:15:57 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:30:04 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ int	run_philo(t_philo **philos, t_settings settings)
 	{
 		philos[i]->right = philos[(i + 1)
 			% settings.number_of_philosophers]->left;
-		if (pthread_create(&(philos[i]->thread), NULL, &philosophing, (void *)philos[i]) != 0)
+		if (pthread_create(&(philos[i]->thread), NULL, &philosophing,
+				(void *)philos[i]) != 0)
 		{
 			access_shared_var(settings.should_stop, 1);
 			return (1);
