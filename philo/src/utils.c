@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 11:58:50 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:50:20 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,7 @@ int	setup(t_philo **philos, t_settings settings)
 		philos[i]->meal_count = 0;
 		philos[i]->last_meal = 0;
 		cpy_settings(&philos[i]->settings, settings);
-		if (i % 2 == 0 && i + 1 < settings.number_of_philosophers)
-			philos[i]->state = EATING;
-		else
-			philos[i]->state = THINKING;
+		philos[i]->state = THINKING;
 		if (setup_fork(philos, i) == -1)
 			return (-1);
 		i++;

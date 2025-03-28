@@ -6,22 +6,12 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/18 10:18:34 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 10:05:24 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include "philosophers.h"
-
-void	print_state(t_philo *philo, const char *msg)
-{
-	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
-
-	pthread_mutex_lock(&lock);
-	printf("%u\t%d\t%s\n",
-		get_current_time_ms(philo->settings.starting_time), philo->id, msg);
-	pthread_mutex_unlock(&lock);
-}
 
 int	lock_forks(t_philo *philo, pthread_mutex_t *left, pthread_mutex_t *right)
 {
@@ -85,11 +75,28 @@ void	do_action(t_philo *philo)
 	else if (philo->state == THINKING)
 	{
 		print_state(philo, "is thinking");
+		usleep(1000);
 	}
 	else if (philo->state == SLEEPING)
 	{
 		print_state(philo, "is sleeping");
 		sleep_ms(philo->settings.time_to_sleep, philo);
+	}
+}
+
+void	ready_philo(t_philo *philo)
+{
+	if (philo->id % 2 == 0
+		&& philo->id != philo->settings.number_of_philosophers - 1)
+		philo->state = EATING;
+	sleep_ms(llabs(get_current_time_ms(philo->settings.starting_time)), philo);
+	access_shared_var((int *)&philo->last_meal,
+		get_current_time_ms(philo->settings.starting_time));
+	if (philo->state == THINKING)
+	{
+		print_state(philo, "is thinking");
+		sleep_ms(philo->settings.time_to_eat / 2, philo);
+		philo->state = EATING;
 	}
 }
 
@@ -100,6 +107,7 @@ void	*philosophing(void *philo_param)
 
 	nb_meal = 0;
 	philo = (t_philo *)philo_param;
+	ready_philo(philo);
 	while (!access_shared_var(philo->settings.should_stop, 0))
 	{
 		do_action(philo);

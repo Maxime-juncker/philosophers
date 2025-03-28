@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 11:30:04 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 09:56:02 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	create_settings(const int count, char **values,
 		|| settings->time_to_sleep == -1)
 		return (-1);
 	settings->should_stop = stop_ref;
-	settings->starting_time = get_current_time_ms(0);
+	settings->starting_time = get_current_time_ms(0) + 10;
 	if (settings->number_of_meal == 0)
 		return (-1);
 	return (0);
@@ -52,7 +52,9 @@ int	stop_philo(t_philo **philos, t_settings settings)
 		if (is_dead(philos[i]))
 		{
 			access_shared_var(settings.should_stop, 1);
-			print_state(philos[i], "died");
+			printf("%lld\t%d\t%s\n",
+				get_current_time_ms(philos[i]->settings.starting_time),
+				philos[i]->id, "died");
 			return (1);
 		}
 		if (settings.number_of_meal != -1
@@ -62,10 +64,7 @@ int	stop_philo(t_philo **philos, t_settings settings)
 		i++;
 	}
 	if (nb_finished >= settings.number_of_philosophers)
-	{
-		access_shared_var(settings.should_stop, 1);
-		return (1);
-	}
+		return (access_shared_var(settings.should_stop, 1), 1);
 	return (0);
 }
 
@@ -84,7 +83,6 @@ int	run_philo(t_philo **philos, t_settings settings)
 			access_shared_var(settings.should_stop, 1);
 			return (1);
 		}
-		usleep(100);
 		i++;
 	}
 	return (0);

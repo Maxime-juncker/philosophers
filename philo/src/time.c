@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:11:15 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/16 10:40:18 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 10:04:37 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,25 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-unsigned int	get_current_time_ms(long long starting_time)
+void	print_state(t_philo *philo, const char *msg)
+{
+	static pthread_mutex_t	lock = PTHREAD_MUTEX_INITIALIZER;
+
+	pthread_mutex_lock(&lock);
+	if (access_shared_var(philo->settings.should_stop, 0) == 0)
+		printf("%lld\t%d\t%s\n",
+			get_current_time_ms(philo->settings.starting_time), philo->id, msg);
+	pthread_mutex_unlock(&lock);
+}
+
+long long	llabs(long long time)
+{
+	if (time < 0)
+		return (time * -1);
+	return (time);
+}
+
+long long	get_current_time_ms(long long starting_time)
 {
 	long long		time;
 	struct timeval	tv;
