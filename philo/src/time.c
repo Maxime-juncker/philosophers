@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:11:15 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/28 10:04:37 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 13:28:29 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,10 @@ void	print_state(t_philo *philo, const char *msg)
 	pthread_mutex_lock(&lock);
 	if (access_shared_var(philo->settings.should_stop, 0) == 0)
 		printf("%lld\t%d\t%s\n",
-			get_current_time_ms(philo->settings.starting_time), philo->id, msg);
+			get_current_time_ms(philo->settings.starting_time),
+			philo->id + 1,
+			msg);
 	pthread_mutex_unlock(&lock);
-}
-
-long long	llabs(long long time)
-{
-	if (time < 0)
-		return (time * -1);
-	return (time);
 }
 
 long long	get_current_time_ms(long long starting_time)
@@ -54,7 +49,7 @@ int	is_dead(t_philo *philo)
 	return (res >= philo->settings.time_to_die);
 }
 
-int	sleep_ms(int ms, t_philo *philo)
+void	sleep_ms(int ms, t_philo *philo)
 {
 	long long	end_sleep;
 
@@ -64,5 +59,4 @@ int	sleep_ms(int ms, t_philo *philo)
 	{
 		usleep(100);
 	}
-	return (0);
 }

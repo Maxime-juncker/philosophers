@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:00 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/28 10:04:57 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 13:26:42 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right;
 }	t_philo;
 
-int				sleep_ms(int ms, t_philo *philo);
+void			sleep_ms(int ms, t_philo *philo);
 int				is_dead(t_philo *philo);
 long long		get_current_time_ms(long long starting_time);
 int				setup(t_philo **philos, t_settings settings);
@@ -67,7 +67,6 @@ void			*philosophing(void *philo_param);
 // utils.c
 void			print_state(t_philo *philo, const char *msg);
 int				access_shared_var(int *var, int value);
-long long		llabs(long long time);
 void			print_state(t_philo *philo, const char *msg);
 
 #endif //PHILOSOPHERS_H

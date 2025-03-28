@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:46:09 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/28 10:05:24 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 13:29:26 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,13 @@ void	do_action(t_philo *philo)
 
 void	ready_philo(t_philo *philo)
 {
+	long long	starting_time;
+
+	starting_time = get_current_time_ms(philo->settings.starting_time) * -1;
 	if (philo->id % 2 == 0
 		&& philo->id != philo->settings.number_of_philosophers - 1)
 		philo->state = EATING;
-	sleep_ms(llabs(get_current_time_ms(philo->settings.starting_time)), philo);
+	sleep_ms(starting_time, philo);
 	access_shared_var((int *)&philo->last_meal,
 		get_current_time_ms(philo->settings.starting_time));
 	if (philo->state == THINKING)
