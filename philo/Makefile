@@ -1,7 +1,7 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror $(INCLUDES_D)
+CFLAGS = -Wall -Wextra -Werror $(INCLUDES_D) -g3
 MAKEFLAGS += --no-print-directory
 ARGS = 20 2000 200 200 1
 
@@ -39,8 +39,6 @@ RED 			= \033[31m
 GREEN 			= \033[32m
 YELLOW 			= \033[33m
 BLUE 			= \033[34m
-CURSOR_OFF 		= \e[?25l
-CURSOR_ON 		= \e[?25h
 
 RM = rm -fr
 
@@ -53,7 +51,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 	printf "$(GREEN)$(NAME): success\n"
-	printf "\n---------------------$(CURSOR_ON)$(RESET)\n\n"
+	printf "\n---------------------$(RESET)\n\n"
 
 # ---------------------------------------------------------------------------- #
 #                                   compiling                                  #
@@ -61,7 +59,7 @@ $(NAME): $(OBJ)
 
 $(OBJ_D)%.o: %.c includes/philosophers.h | $(OBJ_D)
 	$(CC) $(CFLAGS) -c $< -o $@
-	printf "$(CURSOR_OFF)$(BLUE)"
+	printf "$(BLUE)"
 	printf "$(GRAY)compiling: $(BLUE)%-40s $(GRAY)[%d/%d]\n" "$<" "$$(ls $(OBJ_D) | wc -l)" "$(words $(SRCS))"
 
 # ---------------------------------------------------------------------------- #
@@ -90,7 +88,7 @@ run: all
 
 .PHONY: hel
 hel: all
-	valgrind --tool=helgrind --tool=drd ./$(NAME) $(ARGS)
+	valgrind --tool=helgrind -s ./$(NAME) $(ARGS)
 
 .PHONY: leaks
 leaks: all
@@ -100,9 +98,6 @@ leaks: all
 # ---------------------------------------------------------------------------- #
 $(OBJ_D):
 	mkdir -p $(OBJ_D)
-
-$(LOG_D):
-	mkdir -p $(LOG_D)
 
 $(BIN_D):
 	mkdir -p $(BIN_D)

@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/28 09:56:02 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/28 10:49:45 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,8 @@ int	stop_philo(t_philo **philos, t_settings settings)
 	{
 		if (is_dead(philos[i]))
 		{
+			print_state(philos[i], "died");
 			access_shared_var(settings.should_stop, 1);
-			printf("%lld\t%d\t%s\n",
-				get_current_time_ms(philos[i]->settings.starting_time),
-				philos[i]->id, "died");
 			return (1);
 		}
 		if (settings.number_of_meal != -1
