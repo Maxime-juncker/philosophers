@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:58:45 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/28 13:26:08 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:09:10 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	create_settings(const int count, char **values,
 	else
 		settings->number_of_meal = -1;
 	if (settings->number_of_philosophers == -1
-		|| settings->time_to_die == -1 || settings->time_to_die == -1
+		|| settings->time_to_die == -1 || settings->time_to_eat == -1
 		|| settings->time_to_sleep == -1)
 		return (-1);
 	settings->should_stop = stop_ref;
