@@ -6,7 +6,7 @@
 /*   By: mjuncker <mjuncker@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:35:03 by mjuncker          #+#    #+#             */
-/*   Updated: 2025/03/24 15:50:20 by mjuncker         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:30:06 by mjuncker         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,15 @@ int	setup_fork(t_philo **philos, int i)
 	{
 		free(philos[i]);
 		philos[i] = NULL;
-		return (clear_philo(philos), -1);
+		clear_philo(philos);
+		return (-1);
 	}
 	if (pthread_mutex_init(philos[i]->left, NULL) != 0)
 	{
 		free(philos[i]->left);
 		philos[i]->left = NULL;
-		return (clear_philo(philos), -1);
+		clear_philo(philos);
+		return (-1);
 	}
 	return (0);
 }
@@ -81,7 +83,10 @@ int	setup(t_philo **philos, t_settings settings)
 	{
 		philos[i] = malloc(sizeof(t_philo));
 		if (!philos[i])
-			return (clear_philo(philos), -1);
+		{
+			clear_philo(philos);
+			return (-1);
+		}
 		philos[i]->id = i;
 		philos[i]->meal_count = 0;
 		philos[i]->last_meal = 0;
